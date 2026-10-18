@@ -213,7 +213,6 @@
         <p class="grp__h">Labour</p>
         <div class="line"><span id="l-lab">Installing cameras</span><b id="v-lab"></b></div>
         <div class="line line--off"><span>Your discount</span><b>&minus;$75</b></div>
-        <div class="line line--off"><span>Troubles discount</span><b>&minus;$100</b></div>
         <div class="line line--sub"><span>Labour total</span><b id="v-labt"></b></div>
       </div>
       <div class="grp">
@@ -226,7 +225,7 @@
       </div>
       <div class="tot"><span>Your price</span><b id="v-tot"></b></div>
     </div>
-    <p class="note">Labour is $75 a camera and won&rsquo;t change. Hardware is what the store charges
+    <p class="note">Labour is $80 a camera and won&rsquo;t change. Hardware is what the store charges
     today, before sales tax, with no markup, and you get every receipt. Best Buy only has the
     8-camera kit, so the rest is ordered from Night Owl and shipped. We set the install day once
     it arrives.</p>
@@ -310,7 +309,7 @@
   // Every price on the page lives here. The kit is Best Buy's; everything else is Night Owl's own store.
   // Best Buy's recorder takes 8 wired cameras and the kit fills all 8, so any extra wired camera
   // runs on a second Night Owl recorder (24 channels, 4TB, up to 16 wired).
-  var RATE = 75, DISCOUNTS = 75 + 100,
+  var RATE = 80, DISCOUNT = 75,
       MIN = 10, MAX = 16, KIT_CAMS = 8,
       KIT = 799.99,
       REC = 379.99, REC_REFURB = 299.99,
@@ -401,7 +400,7 @@
       }
     });
 
-    var total = lab - DISCOUNTS + KIT + rec + cams + add;
+    var total = lab - DISCOUNT + KIT + rec + cams + add;
 
     $('minus').disabled = n === MIN;
     $('plus').disabled = n === MAX;
@@ -411,7 +410,7 @@
     function label(id, main, sub) { $(id).innerHTML = main + '<small>' + sub + '</small>'; }
     set('l-lab', 'Installing ' + n + ' cameras × $' + RATE);
     set('v-lab', money(lab));
-    set('v-labt', money(lab - DISCOUNTS));
+    set('v-labt', money(lab - DISCOUNT));
     set('v-kit', money(KIT));
     label('l-ext', extra + ' extra ' + (qty.mp12 ? '12MP' : '4K') + ' cameras', 'Night Owl');
     set('v-ext', money(cams));
@@ -426,7 +425,7 @@
     set('c-tot', money(total));
     set('c-lab-k', 'Other installers, labour for ' + n + ' cameras');
     set('c-them', money(150 * n) + '–' + money(450 * n));
-    set('c-lab', money(lab - DISCOUNTS));
+    set('c-lab', money(lab - DISCOUNT));
 
     set('bar-l', n + ' cameras' + (picked ? ' + ' + picked + ' add-on' + (picked === 1 ? '' : 's') : ''));
     set('bar-v', money(total));
