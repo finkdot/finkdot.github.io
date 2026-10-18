@@ -9,14 +9,16 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
-  /* White page, one narrow column, sections split by thin rules. One accent, used only for prices and ticks. */
+  /* White page, one narrow column. The price builder comes first; everything else is short reference below it. */
   :root {
     --bg: #ffffff;
-    --ink: #16201e;
-    --soft: #5b6664;
-    --faint: #8b9593;
-    --line: #e6eae9;
-    --accent: #1f6f6b;
+    --ink: #1f1a1a;
+    --soft: #625a59;
+    --faint: #958c8b;
+    --line: #ece6e5;
+    --accent: #b94a48;
+    --accent-dark: #9e3d3b;
+    --tint: #fbf1f0;
     --on-accent: #ffffff;
     --display: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
     --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -24,6 +26,7 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
     background: var(--bg);
     color: var(--ink);
@@ -32,17 +35,26 @@
   }
   b { font-weight: 600; }
   a { color: inherit; }
-  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
 
-  .prop {
+  .wrap {
     max-width: 540px;
     margin: 0 auto;
-    padding-block: 36px 44px;
+    padding-top: max(36px, env(safe-area-inset-top, 0px));
+    padding-bottom: max(44px, env(safe-area-inset-bottom, 0px));
     padding-left: max(20px, env(safe-area-inset-left, 0px));
     padding-right: max(20px, env(safe-area-inset-right, 0px));
   }
 
-  .head { padding-bottom: 28px; }
+  .head { padding-bottom: 26px; }
+  .eyebrow {
+    font: 700 11.5px/1.2 var(--body);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
   h1 {
     font: 800 clamp(30px, 8vw, 40px)/1.06 var(--display);
     letter-spacing: -0.02em;
@@ -51,56 +63,111 @@
   }
   .head p:last-child { color: var(--soft); font-size: 16px; }
 
-  .sec { padding-block: 26px; border-top: 1px solid var(--line); min-width: 0; }
-  .lbl {
+  .sec { padding-block: 26px; border-top: 1px solid var(--line); }
+  h2 {
     font: 700 11.5px/1.2 var(--body);
     text-transform: uppercase;
     letter-spacing: 0.12em;
     color: var(--faint);
     margin-bottom: 14px;
   }
-  .note { color: var(--soft); font-size: 14px; margin-top: 16px; }
+  .q { font-weight: 600; font-size: 15px; margin-bottom: 10px; }
+  .note { color: var(--soft); font-size: 13.5px; margin-top: 12px; }
 
-  /* price */
-  .deal { font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 12px; }
-  .price { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-  .price__c { border: 1px solid var(--line); border-radius: 12px; padding: 14px 4px 12px; text-align: center; }
-  .price__n { font-size: 13px; color: var(--soft); }
-  .price__v {
-    font: 800 clamp(21px, 6.2vw, 28px)/1.1 var(--display);
-    color: var(--accent);
-    margin: 4px 0 8px;
-    font-variant-numeric: tabular-nums;
+  /* camera count */
+  .seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .seg button {
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 6px 10px;
+    text-align: center;
+    transition: border-color .15s, background-color .15s;
   }
-  .price__b { font-size: 11.5px; line-height: 1.45; color: var(--faint); }
+  .seg b { display: block; font: 800 26px/1 var(--display); }
+  .seg span { display: block; font-size: 12px; color: var(--soft); margin-top: 4px; }
+  .seg button[aria-pressed="true"] { border-color: var(--accent); background: var(--tint); }
+  .seg button[aria-pressed="true"] b { color: var(--accent); }
+  .mix { font-size: 13.5px; color: var(--soft); margin-top: 10px; }
 
-  .rows { margin-top: 18px; }
-  .row { display: flex; justify-content: space-between; gap: 14px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; }
-  .row:first-child { border-top: 0; }
-  .row span { color: var(--soft); }
-  .row b { text-align: right; }
+  /* add-ons */
+  .adds { display: grid; gap: 0; margin-top: 4px; }
+  .add {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px 14px;
+    align-items: center;
+    padding: 14px 0;
+    border-top: 1px solid var(--line);
+  }
+  .add:first-child { border-top: 0; }
+  .add__t { font-weight: 600; font-size: 15px; }
+  .add__p { font-weight: 700; color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .add__p small { font-weight: 500; color: var(--faint); font-size: 12px; }
+  .add__d { grid-column: 1 / -1; font-size: 13px; color: var(--soft); }
+  .add__d a { color: var(--faint); white-space: nowrap; }
+  .add__c { grid-column: 1 / -1; display: flex; justify-content: flex-end; }
 
-  /* checklist */
+  .tog {
+    border: 1.5px solid var(--accent);
+    color: var(--accent);
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-weight: 600;
+    font-size: 14px;
+    min-width: 92px;
+  }
+  .tog[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+
+  .step { display: inline-flex; align-items: center; border: 1.5px solid var(--line); border-radius: 999px; }
+  .step button { width: 38px; height: 34px; font-size: 20px; line-height: 1; color: var(--accent); }
+  .step button:disabled { color: var(--line); cursor: default; }
+  .step output { min-width: 26px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* summary */
+  .sum { margin-top: 18px; background: var(--tint); border-radius: 14px; padding: 16px; }
+  .line { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; padding: 4px 0; font-variant-numeric: tabular-nums; }
+  .line span { color: var(--soft); }
+  .line--off b { color: var(--accent); }
+  .tot {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+    margin-top: 10px; padding-top: 12px; border-top: 1px solid rgba(185, 74, 72, .18);
+  }
+  .tot span { font-weight: 600; }
+  .tot b { font: 800 30px/1 var(--display); color: var(--accent); font-variant-numeric: tabular-nums; }
+
+  .bar {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 5;
+    background: var(--accent);
+    color: var(--on-accent);
+    padding: 12px max(20px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px));
+    transform: translateY(110%);
+    transition: transform .2s ease;
+  }
+  .bar--on { transform: none; }
+  .bar__in { max-width: 500px; margin: 0 auto; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .bar span { font-size: 13.5px; opacity: .9; }
+  .bar b { font: 800 22px/1 var(--display); font-variant-numeric: tabular-nums; }
+
+  /* lists */
   .inc { list-style: none; display: grid; gap: 10px; }
   .inc li { display: grid; grid-template-columns: 16px 1fr; gap: 10px; font-size: 15px; }
   .inc svg { margin-top: 3px; width: 16px; height: 16px; }
   .inc path { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-  /* comparison */
-  .cmp { display: grid; gap: 18px; }
-  .cmp__k { font-size: 14px; color: var(--soft); margin-bottom: 6px; }
+  .cmp { display: grid; gap: 16px; }
+  .cmp__k { font-size: 14px; color: var(--soft); margin-bottom: 4px; }
   .cmp__v { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 12px; }
-  .cmp__them, .cmp__me { font: 700 17px/1.2 var(--display); font-variant-numeric: tabular-nums; }
+  .cmp__them, .cmp__me { font: 700 18px/1.2 var(--display); font-variant-numeric: tabular-nums; }
   .cmp__them { color: var(--faint); }
-  .cmp__me { color: var(--accent); text-align: right; margin-left: auto; font-weight: 800; }
-  .cmp__v small { display: block; font: 500 11.5px/1.3 var(--body); color: var(--faint); }
+  .cmp__me { color: var(--accent); margin-left: auto; text-align: right; font-weight: 800; }
+  .cmp__v small { display: block; font: 500 12px/1.3 var(--body); color: var(--faint); }
 
-  /* plain list */
   .plain { list-style: none; display: grid; gap: 10px; }
   .plain li { display: grid; grid-template-columns: 5px 1fr; gap: 12px; font-size: 14px; color: var(--soft); }
   .plain li::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--faint); margin-top: 8px; }
 
-  /* steps */
   .steps { list-style: none; counter-reset: s; display: grid; gap: 12px; }
   .steps li { counter-increment: s; display: grid; grid-template-columns: 24px 1fr; gap: 12px; font-size: 14.5px; color: var(--soft); }
   .steps li::before {
@@ -110,120 +177,252 @@
   }
   .steps b { color: var(--ink); }
 
-  .src { color: var(--faint); font-size: 11.5px; line-height: 1.5; padding-top: 22px; border-top: 1px solid var(--line); }
+  .src { color: var(--faint); font-size: 12px; line-height: 1.55; padding-top: 22px; border-top: 1px solid var(--line); }
 
-  @media (max-width: 380px) {
-    .price { grid-template-columns: 1fr; }
-    .price__c { display: grid; grid-template-columns: auto 1fr; align-items: center; text-align: left; padding: 12px 14px; column-gap: 12px; }
-    .price__n { grid-column: 1; }
-    .price__v { grid-column: 2; grid-row: 1 / span 2; text-align: right; margin: 0; }
-    .price__b { grid-column: 1; }
-  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
-<main class="prop">
+
+<main class="wrap">
 
   <header class="head">
-    <p class="lbl">Camera Install</p>
+    <p class="eyebrow">Camera Install</p>
     <h1>Cameras for Loving&nbsp;Touch Pet&nbsp;Salon</h1>
-    <p>10&ndash;12 Night Owl 4K cameras, wired in and recording right in your salon. No contract.
-    No monthly fee.</p>
+    <p>Night Owl 4K cameras, recording right in your salon. No contract. No monthly fee.</p>
   </header>
 
-  <section class="sec">
-    <h2 class="lbl">Your price</h2>
-    <p class="deal">$75 off labour, already taken off below</p>
-    <div class="price">
-      <div class="price__c">
-        <p class="price__n">10 cameras</p>
-        <p class="price__v">$1,525</p>
-        <p class="price__b">$675 labour<br>~$850 hardware</p>
-      </div>
-      <div class="price__c">
-        <p class="price__n">11 cameras</p>
-        <p class="price__v">$1,677</p>
-        <p class="price__b">$750 labour<br>~$927 hardware</p>
-      </div>
-      <div class="price__c">
-        <p class="price__n">12 cameras</p>
-        <p class="price__v">$1,829</p>
-        <p class="price__b">$825 labour<br>~$1,004 hardware</p>
-      </div>
-    </div>
+  <!-- builder -->
+  <section class="sec" aria-labelledby="b-h">
+    <h2 id="b-h">Build your price</h2>
 
-    <div class="rows">
-      <div class="row"><span>Labour</span><b>$75 per camera, then $75 off</b></div>
-      <div class="row"><span>Hardware</span><b>What Best Buy charges, no markup</b></div>
-      <div class="row"><span>Monthly fee</span><b>$0, ever</b></div>
+    <p class="q">How many cameras?</p>
+    <div class="seg" id="count" role="group" aria-label="Number of cameras">
+      <button type="button" data-n="10" aria-pressed="true"><b>10</b><span>cameras</span></button>
+      <button type="button" data-n="11" aria-pressed="false"><b>11</b><span>cameras</span></button>
+      <button type="button" data-n="12" aria-pressed="false"><b>12</b><span>cameras</span></button>
     </div>
+    <p class="mix" id="mix"></p>
 
-    <p class="note">The hardware part can move a few dollars with Best Buy&rsquo;s price, so the
-    totals are close, not exact. You pay the shelf price on the day and get the receipt. Want
-    more recording history? A 4TB drive instead of 2TB is +$70.</p>
+    <p class="q" style="margin-top:24px">Add anything?</p>
+    <div class="adds" id="adds"></div>
+
+    <div class="sum" aria-live="polite">
+      <div class="line"><span id="l-lab">Fitting</span><b id="v-lab"></b></div>
+      <div class="line line--off"><span>Your discount</span><b>&minus;$75</b></div>
+      <div class="line"><span>Main kit, Best Buy</span><b id="v-kit"></b></div>
+      <div class="line"><span id="l-wifi">Wi-Fi cameras, Night Owl</span><b id="v-wifi"></b></div>
+      <div class="line" id="r-add" hidden><span>Add-ons, Night Owl</span><b id="v-add"></b></div>
+      <div class="tot"><span>Your price</span><b id="v-tot"></b></div>
+    </div>
+    <p class="note">Labour is $75 a camera and won&rsquo;t change. Hardware is at today&rsquo;s store
+    prices before sales tax, with no markup. You pay what the store charges and get every
+    receipt.</p>
+
   </section>
 
   <section class="sec">
-    <h2 class="lbl">What you get</h2>
+    <h2>What you get</h2>
     <ul class="inc">
       <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.5"/></svg>We walk the salon together and pick every spot</li>
       <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.5"/></svg>Cables run neatly and out of sight</li>
       <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.5"/></svg>Every camera mounted, aimed and tested</li>
       <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.5"/></svg>Cameras named by room, so you know what you&rsquo;re looking at</li>
-      <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.5"/></svg>Live view on your phone from anywhere, plus any staff phones</li>
+      <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.5"/></svg>Live view on your phone, plus any staff phones</li>
       <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.5"/></svg>I show you how to find and save a clip</li>
     </ul>
   </section>
 
   <section class="sec">
-    <h2 class="lbl">How it compares</h2>
+    <h2>How it compares</h2>
     <div class="cmp">
       <div>
         <p class="cmp__k">ADT monitored system, over 5 years</p>
         <div class="cmp__v">
           <p class="cmp__them">$3,478<small>$299 + $52.99/mo</small></p>
-          <p class="cmp__me">$1,525&ndash;$1,829<small>one time, then $0</small></p>
+          <p class="cmp__me"><span id="c-tot"></span><small>one time, then $0</small></p>
         </div>
       </div>
       <div>
         <p class="cmp__k">Other installers, labour for 10&ndash;12 cameras</p>
         <div class="cmp__v">
           <p class="cmp__them">$1,500&ndash;$5,400<small>$150&ndash;$450 a camera</small></p>
-          <p class="cmp__me">$675&ndash;$825<small>$75 a camera, then $75 off</small></p>
+          <p class="cmp__me">$675&ndash;$825</p>
         </div>
       </div>
     </div>
-    <p class="note">To be fair to ADT: their monthly fee pays for someone watching and calling the
-    police. This system records so you can see what happened, but nobody is watching it live.</p>
+    <p class="note">ADT&rsquo;s monthly fee pays for someone watching live. This records everything
+    so you can look back, with no bill after the install.</p>
   </section>
 
   <section class="sec">
-    <h2 class="lbl">Good to know</h2>
+    <h2>Good to know</h2>
     <ul class="plain">
-      <li>Footage is saved on the recorder in the salon, not in the cloud.</li>
-      <li>The price assumes normal walls and a drop ceiling. Brick, drywall repair, new outlets or
-      very high ceilings would cost extra, and I&rsquo;d tell you before starting, never after.</li>
-      <li>The recorder takes up to 12 cameras, so 12 is the most this setup can hold.</li>
+      <li>The recorder takes 8 wired cameras and 4 Wi-Fi ones. Cameras 9 to 12 are Wi-Fi, so each
+      needs a power outlet nearby.</li>
+      <li>Pan &amp; tilt cameras are for inside, and they run on their own with a memory card.</li>
+      <li>Footage stays on the recorder in the salon, not in the cloud.</li>
+      <li>Brick, drywall repair, new outlets or very high ceilings would cost extra. I&rsquo;d tell
+      you before starting, never after.</li>
     </ul>
   </section>
 
   <section class="sec">
-    <h2 class="lbl">Next steps</h2>
+    <h2>Next steps</h2>
     <ol class="steps">
-      <li><span><b>Free walkthrough.</b> We decide where the cameras go, and whether you want 10,
-      11 or 12.</span></li>
-      <li><span><b>Order the kit</b> from Best Buy at the best price we can find that week.</span></li>
+      <li><span><b>Free walkthrough.</b> We pick where every camera goes.</span></li>
+      <li><span><b>Order the kit</b> at the best price we can find that week.</span></li>
       <li><span><b>Install in one day.</b> It&rsquo;s live on your phone before I leave.</span></li>
     </ol>
   </section>
 
-  <p class="src">Prices: Night Owl 12-channel 4K kit with 8 cameras and 2TB drive,
-  <a href="https://www.bestbuy.com/site/6587853.p" target="_blank" rel="noopener">Best Buy</a>
-  $599.99, plus add-on cameras at about $65 each. ADT business rates from
+  <p class="src">Main kit: Night Owl 12-Channel 8-Camera Wired IP 4K 2TB NVR (BNVR8-122-8L),
+  <a href="https://www.bestbuy.com/site/6587853.p" target="_blank" rel="noopener">Best Buy</a>.
+  Wi-Fi cameras and add-ons:
+  <a href="https://nightowlsp.com/collections/accessories" target="_blank" rel="noopener">Night Owl</a>.
+  ADT rates from
   <a href="https://myutilitysearch.com/?p=3424" target="_blank" rel="noopener">MyUtilitySearch</a>.
   Installer rates from
   <a href="https://www.eufy.com/blogs/security-camera/security-camera-installation-cost" target="_blank" rel="noopener">Eufy</a>.</p>
 
 </main>
+
+<div class="bar" id="bar" aria-hidden="true"><div class="bar__in"><span id="bar-l"></span><b id="bar-v"></b></div></div>
+
+<script>
+(function () {
+  'use strict';
+  // Every price on the page lives here. Kit is Best Buy's; the rest is Night Owl's own store.
+  var RATE = 75, DISCOUNT = 75, WIRED = 8,
+      KIT = 799.99,
+      WIFI_ONE = 109.99, WIFI_TWO = 214.99;
+
+  var NO = 'https://nightowlsp.com/products/';
+  var ADDONS = [
+    { id: 'ptz', name: 'Pan & tilt camera', price: 94.98, fit: RATE, max: 4,
+      desc: 'Turns to follow movement. Indoor, Wi-Fi, comes with a 128GB memory card ($59.99 camera + $34.99 card).',
+      url: NO + 'indoor-wi-fi-ip-plug-in-3mp-deterrence-camera-with-pan-tilt-and-2-way-audio-white' },
+    { id: 'hdd', name: 'Second 2TB hard drive', price: 119.99, fit: 0, max: 1,
+      desc: 'Doubles how far back you can watch, to 4TB in total.',
+      url: NO + '3-5-internal-2tb-sata-hard-disk-drive-compatible-with-night-owl-wired-and-wireless-recorders' },
+    { id: 'ant', name: 'Wi-Fi antenna extender', price: 16.99, fit: 0, max: 4,
+      desc: 'Stronger signal for a Wi-Fi camera that sits far from the recorder.',
+      url: NO + '9-ft-wi-fi-extender-antenna-compatible-with-night-owl-wi-fi-ip-cameras-and-wi-fi-nvr' },
+    { id: 'cab', name: '100 ft Ethernet cable', price: 37.99, fit: 0, max: 8,
+      desc: 'For a wired camera that has to reach a far corner.',
+      url: NO + '100-ft-cat5e-ul-rated-ethernet-cable-with-rj45-coupler-1' },
+    { id: 'sign', name: 'Yard sign + 4 window stickers', price: 19.99, fit: 0, max: 1,
+      desc: 'Lets people know the salon is on camera.',
+      url: NO + 'reflective-outdoor-aluminum-yard-stake-sign' }
+  ];
+
+  var n = 10, qty = {};
+  ADDONS.forEach(function (a) { qty[a.id] = 0; });
+
+  function money(v) { return '$' + Math.round(v).toLocaleString('en-US'); }
+  function cents(v) { return '$' + v.toFixed(2); }
+  function wifiCost(w) { return Math.floor(w / 2) * WIFI_TWO + (w % 2) * WIFI_ONE; }
+
+  // build add-on rows
+  var list = document.getElementById('adds');
+  ADDONS.forEach(function (a) {
+    var row = document.createElement('div');
+    row.className = 'add';
+    var fit = a.fit ? ' <small>+ $' + a.fit + ' fitting</small>' : '';
+    var ctl = a.max === 1
+      ? '<button type="button" class="tog" data-id="' + a.id + '" aria-pressed="false">Add</button>'
+      : '<div class="step" role="group" aria-label="' + a.name + ' quantity">' +
+          '<button type="button" data-id="' + a.id + '" data-d="-1" aria-label="Remove one">&minus;</button>' +
+          '<output id="q-' + a.id + '">0</output>' +
+          '<button type="button" data-id="' + a.id + '" data-d="1" aria-label="Add one">+</button>' +
+        '</div>';
+    row.innerHTML =
+      '<p class="add__t">' + a.name + '</p>' +
+      '<p class="add__p">' + cents(a.price) + (a.max > 1 ? ' <small>each</small>' : '') + fit + '</p>' +
+      '<p class="add__d">' + a.desc + ' <a href="' + a.url + '" target="_blank" rel="noopener">Night Owl &rarr;</a></p>' +
+      '<div class="add__c">' + ctl + '</div>';
+    list.appendChild(row);
+  });
+
+  list.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-id]');
+    if (!b) return;
+    var a = ADDONS.filter(function (x) { return x.id === b.dataset.id; })[0];
+    if (a.max === 1) qty[a.id] = qty[a.id] ? 0 : 1;
+    else qty[a.id] = Math.max(0, Math.min(a.max, qty[a.id] + Number(b.dataset.d)));
+    draw();
+  });
+
+  var count = document.getElementById('count');
+  count.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-n]');
+    if (!b) return;
+    n = Number(b.dataset.n);
+    Array.prototype.forEach.call(count.children, function (c) {
+      c.setAttribute('aria-pressed', c === b ? 'true' : 'false');
+    });
+    draw();
+  });
+
+  function set(id, text) { document.getElementById(id).textContent = text; }
+
+  function draw() {
+    var wifi = n - WIRED,
+        fitted = n + qty.ptz,
+        lab = fitted * RATE,
+        hwWifi = wifiCost(wifi),
+        add = 0, picked = 0;
+
+    ADDONS.forEach(function (a) {
+      add += qty[a.id] * a.price;
+      picked += qty[a.id];
+      var o = document.getElementById('q-' + a.id);
+      if (o) {
+        o.textContent = qty[a.id];
+        o.previousElementSibling.disabled = qty[a.id] === 0;
+        o.nextElementSibling.disabled = qty[a.id] === a.max;
+      } else {
+        var t = list.querySelector('.tog[data-id="' + a.id + '"]');
+        t.setAttribute('aria-pressed', qty[a.id] ? 'true' : 'false');
+        t.textContent = qty[a.id] ? 'Added' : 'Add';
+      }
+    });
+
+    var total = lab - DISCOUNT + KIT + hwWifi + add;
+
+    set('mix', '8 wired cameras from the kit + ' + wifi + ' Wi-Fi camera' + (wifi === 1 ? '' : 's') + '.');
+    set('l-lab', 'Fitting, ' + fitted + ' cameras × $' + RATE);
+    set('v-lab', money(lab));
+    set('v-kit', money(KIT));
+    set('l-wifi', 'Wi-Fi cameras, Night Owl (' + wifi + ')');
+    set('v-wifi', money(hwWifi));
+    document.getElementById('r-add').hidden = !add;
+    set('v-add', money(add));
+    set('v-tot', money(total));
+    set('c-tot', money(total));
+    set('bar-l', n + ' cameras' + (picked ? ' + ' + picked + ' add-on' + (picked === 1 ? '' : 's') : ''));
+    set('bar-v', money(total));
+  }
+
+  draw();
+
+  // the bottom bar shows the total while she is picking, and steps aside once the real total is on screen
+  var bar = document.getElementById('bar'),
+      builder = document.querySelector('[aria-labelledby="b-h"]'),
+      sum = document.querySelector('.sum'),
+      seen = { builder: false, sum: false };
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es) {
+      es.forEach(function (e) { seen[e.target === sum ? 'sum' : 'builder'] = e.isIntersecting; });
+      bar.classList.toggle('bar--on', seen.builder && !seen.sum);
+    }).observe(builder);
+    new IntersectionObserver(function (es) {
+      seen.sum = es[0].isIntersecting;
+      bar.classList.toggle('bar--on', seen.builder && !seen.sum);
+    }).observe(sum);
+  }
+})();
+</script>
+
 </body>
 </html>
