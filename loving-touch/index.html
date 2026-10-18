@@ -95,6 +95,7 @@
     border-top: 1px solid var(--line);
   }
   .add:first-child { border-top: 0; }
+  .add[hidden] { display: none; }
   .add__t { font-weight: 600; font-size: 15px; }
   .add__p { font-weight: 700; color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
   .add__p small { font-weight: 500; color: var(--faint); font-size: 12px; }
@@ -310,7 +311,7 @@
   // Best Buy's recorder takes 8 wired cameras and the kit fills all 8, so any extra wired camera
   // runs on a second Night Owl recorder (24 channels, 4TB, up to 16 wired).
   var RATE = 80, DISCOUNT = 75,
-      MIN = 10, MAX = 16, KIT_CAMS = 8,
+      MIN = 8, MAX = 16, KIT_CAMS = 8,
       KIT = 799.99,
       REC = 379.99, REC_REFURB = 299.99,
       CAM_ONE = 109.99, CAM_TWO = 159.99,        // wired 4K
@@ -329,7 +330,7 @@
       url: NO + '100-ft-cat5e-ul-rated-ethernet-cable-with-rj45-coupler-1' }
   ];
 
-  var n = MIN, qty = { mp12: 0, refurb: 0, cab: 0 };
+  var n = 10, qty = { mp12: 0, refurb: 0, cab: 0 };
 
   function money(v) { return (v < 0 ? '−$' : '$') + Math.abs(Math.round(v)).toLocaleString('en-US'); }
   function cents(v) { return (v < 0 ? '−$' : '$') + Math.abs(v).toFixed(2); }
@@ -374,9 +375,16 @@
   $('plus').addEventListener('click', function () { n = Math.min(MAX, n + 1); draw(); });
 
   function draw() {
-    var extra = n - KIT_CAMS,
-        lab = n * RATE,
-        rec = qty.refurb ? REC_REFURB : REC,
+    var extra = n - KIT_CAMS;
+    // at 8 cameras the Best Buy kit is the whole job: no second recorder, nothing to upgrade
+    if (!extra) { qty.mp12 = 0; qty.refurb = 0; }
+    $('row-mp12').hidden = !extra;
+    $('row-refurb').hidden = !extra;
+    $('l-ext').parentNode.hidden = !extra;
+    $('l-rec').parentNode.hidden = !extra;
+
+    var lab = n * RATE,
+        rec = !extra ? 0 : qty.refurb ? REC_REFURB : REC,
         cams = camCost(extra, qty.mp12),
         sharpExtra = camCost(extra, 1) - camCost(extra, 0),
         add = qty.cab * 37.99,
@@ -405,14 +413,16 @@
     $('minus').disabled = n === MIN;
     $('plus').disabled = n === MAX;
     set('n', n);
-    set('mix', '8 from the Best Buy kit + ' + extra + ' extra from Night Owl. All wired.');
+    set('mix', extra
+      ? '8 from the Best Buy kit + ' + extra + ' extra from Night Owl. All wired.'
+      : 'Just the Best Buy kit, nothing extra to order. All wired.');
 
     function label(id, main, sub) { $(id).innerHTML = main + '<small>' + sub + '</small>'; }
     set('l-lab', 'Installing ' + n + ' cameras × $' + RATE);
     set('v-lab', money(lab));
     set('v-labt', money(lab - DISCOUNT));
     set('v-kit', money(KIT));
-    label('l-ext', extra + ' extra ' + (qty.mp12 ? '12MP' : '4K') + ' cameras', 'Night Owl');
+    label('l-ext', extra + ' extra ' + (qty.mp12 ? '12MP' : '4K') + ' camera' + (extra === 1 ? '' : 's'), 'Night Owl');
     set('v-ext', money(cams));
     label('l-rec', (qty.refurb ? 'Refurbished second' : 'Second') + ' recorder, 4TB', 'Night Owl, runs the extra cameras');
     set('v-rec', money(rec));
