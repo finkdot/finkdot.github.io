@@ -89,19 +89,18 @@
   .add {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 6px 14px;
-    align-items: center;
-    padding: 14px 0;
+    gap: 2px 16px;
+    padding: 16px 0;
     border-top: 1px solid var(--line);
   }
   .add:first-child { border-top: 0; }
   .add[hidden] { display: none; }
-  .add__t { font-weight: 600; font-size: 15px; }
-  .add__p { font-weight: 700; color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .add__t { grid-column: 1; font-weight: 600; font-size: 15px; }
+  .add__p { grid-column: 1; font-weight: 700; color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
   .add__p small { font-weight: 500; color: var(--faint); font-size: 12px; }
-  .add__d { grid-column: 1 / -1; font-size: 13px; color: var(--soft); }
+  .add__d { grid-column: 1; font-size: 13px; color: var(--soft); margin-top: 2px; }
   .add__d a { color: var(--faint); white-space: nowrap; }
-  .add__c { grid-column: 1 / -1; display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
+  .add__c { grid-column: 2; grid-row: 1 / span 3; align-self: center; }
 
   .tog {
     border: 1.5px solid var(--accent);
@@ -110,12 +109,12 @@
     padding: 6px 16px;
     font-weight: 600;
     font-size: 14px;
-    min-width: 92px;
+    min-width: 84px;
   }
   .tog[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
 
   .step { display: inline-flex; align-items: center; border: 1.5px solid var(--line); border-radius: 999px; }
-  .step button { width: 38px; height: 34px; font-size: 20px; line-height: 1; color: var(--accent); }
+  .step button { width: 40px; height: 40px; font-size: 20px; line-height: 1; color: var(--accent); }
   .step button:disabled { color: var(--line); cursor: default; }
   .step output { min-width: 26px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
 
@@ -144,10 +143,13 @@
     background: var(--accent);
     color: var(--on-accent);
     padding: 12px max(20px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px));
+    width: 100%;
+    text-align: left;
     transform: translateY(110%);
-    transition: transform .2s ease;
+    visibility: hidden;
+    transition: transform .2s ease, visibility .2s;
   }
-  .bar--on { transform: none; }
+  .bar--on { transform: none; visibility: visible; }
   .bar__in { max-width: 500px; margin: 0 auto; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
   .bar span { font-size: 13.5px; opacity: .9; }
   .bar b { font: 800 22px/1 var(--display); font-variant-numeric: tabular-nums; }
@@ -269,11 +271,9 @@
   <section class="sec">
     <h2>Good to know</h2>
     <ul class="plain">
-      <li>Every camera is wired. No Wi-Fi cameras.</li>
-      <li>Best Buy only sells the kit with 8 cameras, and its recorder takes 8 wired cameras. So the
-      extra cameras run on a second recorder from Night Owl, with a 4TB drive. I set both up in
-      the same Night Owl app, so you see every camera in one place.</li>
-      <li>The extra cameras and the second recorder are ordered from Night Owl and shipped.</li>
+      <li>Every camera is wired. No Wi-Fi.</li>
+      <li>Past 8 cameras, a second recorder from Night Owl runs the extra ones. I set both up in the
+      same Night Owl app, so you see every camera in one place.</li>
       <li>Footage stays in the salon, not in the cloud.</li>
       <li>Brick, drywall repair, new outlets or very high ceilings would cost extra. I&rsquo;d tell
       you before starting, never after.</li>
@@ -302,7 +302,7 @@
 
 </main>
 
-<div class="bar" id="bar" aria-hidden="true"><div class="bar__in"><span id="bar-l"></span><b id="bar-v"></b></div></div>
+<button type="button" class="bar" id="bar" aria-label="See the price breakdown"><span class="bar__in"><span id="bar-l"></span><b id="bar-v"></b></span></button>
 
 <script>
 (function () {
@@ -414,8 +414,8 @@
     $('plus').disabled = n === MAX;
     set('n', n);
     set('mix', extra
-      ? '8 from the Best Buy kit + ' + extra + ' extra from Night Owl. All wired.'
-      : 'Just the Best Buy kit, nothing extra to order. All wired.');
+      ? '8 from the Best Buy kit, ' + extra + ' from Night Owl. All wired.'
+      : 'Just the Best Buy kit. All wired.');
 
     function label(id, main, sub) { $(id).innerHTML = main + '<small>' + sub + '</small>'; }
     set('l-lab', 'Installing ' + n + ' cameras × $' + RATE);
@@ -443,13 +443,19 @@
 
   draw();
 
-  // the bottom bar shows the total while she is picking, and steps aside once the real total is on screen
-  var bar = $('bar'), seen = { b: false, s: false };
-  function bar_() { bar.classList.toggle('bar--on', seen.b && !seen.s); }
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (es) { seen.b = es[0].isIntersecting; bar_(); }).observe($('builder'));
-    new IntersectionObserver(function (es) { seen.s = es[0].isIntersecting; bar_(); }).observe(document.querySelector('.sum'));
+  // the bottom bar shows the total while the breakdown is still below the screen, and taps down to it
+  var bar = $('bar'), builder = $('builder'), sum = document.querySelector('.sum'),
+      calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function placeBar() {
+    var vh = window.innerHeight,
+        show = builder.getBoundingClientRect().top < vh && sum.getBoundingClientRect().top > vh - bar.offsetHeight;
+    bar.classList.toggle('bar--on', show);
   }
+  window.addEventListener('scroll', placeBar, { passive: true });
+  window.addEventListener('resize', placeBar);
+  bar.addEventListener('click', function () { sum.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'center' }); });
+  list.addEventListener('click', function () { requestAnimationFrame(placeBar); });
+  placeBar();
 })();
 </script>
 
