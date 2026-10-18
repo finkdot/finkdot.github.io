@@ -95,14 +95,12 @@
     border-top: 1px solid var(--line);
   }
   .add:first-child { border-top: 0; }
-  .add[hidden] { display: none; }
   .add__t { font-weight: 600; font-size: 15px; }
   .add__p { font-weight: 700; color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
   .add__p small { font-weight: 500; color: var(--faint); font-size: 12px; }
   .add__d { grid-column: 1 / -1; font-size: 13px; color: var(--soft); }
   .add__d a { color: var(--faint); white-space: nowrap; }
   .add__c { grid-column: 1 / -1; display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
-  .add__why { font-size: 12.5px; color: var(--accent); font-weight: 600; }
 
   .tog {
     border: 1.5px solid var(--accent);
@@ -114,7 +112,6 @@
     min-width: 92px;
   }
   .tog[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
-  .tog:disabled { cursor: default; opacity: .75; }
 
   .step { display: inline-flex; align-items: center; border: 1.5px solid var(--line); border-radius: 999px; }
   .step button { width: 38px; height: 34px; font-size: 20px; line-height: 1; color: var(--accent); }
@@ -211,9 +208,9 @@
       <div class="line"><span id="l-lab">Fitting</span><b id="v-lab"></b></div>
       <div class="line line--off"><span>Your discount</span><b>&minus;$75</b></div>
       <div class="line line--off"><span>Troubles discount</span><b>&minus;$100</b></div>
-      <div class="line"><span>Main kit, Best Buy</span><b id="v-kit"></b></div>
-      <div class="line" id="r-ext"><span id="l-ext"></span><b id="v-ext"></b></div>
-      <div class="line" id="r-rec" hidden><span>4TB recorder, ordered from Night Owl</span><b id="v-rec"></b></div>
+      <div class="line"><span>8-camera kit, Best Buy</span><b id="v-kit"></b></div>
+      <div class="line"><span id="l-rec">Second recorder, 4TB, ordered from Night Owl</span><b id="v-rec"></b></div>
+      <div class="line"><span id="l-ext"></span><b id="v-ext"></b></div>
       <div class="line" id="r-add" hidden><span>Add-ons, ordered from Night Owl</span><b id="v-add"></b></div>
       <div class="tot"><span>Your price</span><b id="v-tot"></b></div>
       <p class="saved">$175 off, already taken out</p>
@@ -262,13 +259,11 @@
   <section class="sec">
     <h2>Good to know</h2>
     <ul class="plain">
-      <li>Best Buy only sells the kit with 8 cameras. The rest are ordered from Night Owl and
-      shipped.</li>
-      <li>The Best Buy recorder takes 8 wired cameras and 4 Wi-Fi ones. Cameras 9 to 12 on it are
-      Wi-Fi, so each needs a power outlet nearby.</li>
-      <li>The 4TB recorder takes up to 16 wired cameras, so every extra camera is wired. Before
-      ordering it, I check with Night Owl that the Best Buy kit&rsquo;s cameras work on it.</li>
-      <li>Pan &amp; tilt cameras are for inside, and they run on their own with a memory card.</li>
+      <li>Every camera is wired. No Wi-Fi cameras.</li>
+      <li>Best Buy only sells the kit with 8 cameras, and its recorder takes 8 wired cameras. So the
+      extra cameras run on a second recorder from Night Owl, with a 4TB drive. I set both up in
+      the same Night Owl app, so you see every camera in one place.</li>
+      <li>The extra cameras and the second recorder are ordered from Night Owl and shipped.</li>
       <li>Footage stays in the salon, not in the cloud.</li>
       <li>Brick, drywall repair, new outlets or very high ceilings would cost extra. I&rsquo;d tell
       you before starting, never after.</li>
@@ -303,36 +298,36 @@
 (function () {
   'use strict';
   // Every price on the page lives here. The kit is Best Buy's; everything else is Night Owl's own store.
+  // Best Buy's recorder takes 8 wired cameras and the kit fills all 8, so any extra wired camera
+  // runs on a second Night Owl recorder (24 channels, 4TB, up to 16 wired).
   var RATE = 75, DISCOUNTS = 75 + 100,
-      MIN = 10, MAX = 16, KIT_CAMS = 8, SMALL_MAX = 12,
+      MIN = 10, MAX = 16, KIT_CAMS = 8,
       KIT = 799.99,
-      WIFI_ONE = 109.99, WIFI_TWO = 214.99,      // Wi-Fi 4K cameras, for the Best Buy recorder
-      WIRED_ONE = 109.99, WIRED_TWO = 159.99,    // wired 4K cameras, for the 4TB recorder
-      BIG_REC = 379.99;
+      REC = 379.99, REC_REFURB = 299.99,
+      CAM_ONE = 109.99, CAM_TWO = 159.99,        // wired 4K
+      CAM12_ONE = 119.99, CAM12_TWO = 214.99;    // wired 12MP
 
   var NO = 'https://nightowlsp.com/products/';
   var ADDONS = [
-    { id: 'rec', name: '4TB recorder upgrade', price: BIG_REC, max: 1,
-      desc: 'Twice the recording history, and room for up to 16 wired cameras instead of 8.',
-      url: NO + '2-way-audio-24-channel-4k-nvr-with-4tb-hard-drive-add-up-to-24-total-devices' },
-    { id: 'ptz', name: 'Pan & tilt camera', price: 94.98, fit: RATE, max: 4,
-      desc: 'Turns to follow movement. Indoor, Wi-Fi, comes with a 128GB memory card ($59.99 camera + $34.99 card).',
-      url: NO + 'indoor-wi-fi-ip-plug-in-3mp-deterrence-camera-with-pan-tilt-and-2-way-audio-white' },
-    { id: 'ant', name: 'Wi-Fi antenna extender', price: 16.99, max: 4,
-      desc: 'Stronger signal for a Wi-Fi camera that sits far from the recorder.',
-      url: NO + '9-ft-wi-fi-extender-antenna-compatible-with-night-owl-wi-fi-ip-cameras-and-wi-fi-nvr' },
-    { id: 'cab', name: '100 ft Ethernet cable', price: 37.99, max: 8,
-      desc: 'For a wired camera that has to reach a far corner.',
+    { id: 'mp12', name: 'Sharper 12MP cameras', max: 1, price: null,
+      desc: 'Makes the extra cameras 12MP instead of 4K, for clearer faces and fine detail.',
+      url: NO + 'add-on-wired-ip-12mp-deterrence-camera-with-2-way-audio-2-pack-white' },
+    { id: 'refurb', name: 'Refurbished recorder', max: 1, price: REC_REFURB - REC,
+      desc: 'Night Owl&rsquo;s own refurbished 4TB recorder, $299.99 instead of $379.99.',
+      url: NO + 'refurbished-power-over-ethernet-24-channel-4k-nvr-with-4tb-hard-drive-add-up-to-24-total-devices' },
+    { id: 'cab', name: '100 ft Ethernet cable', max: 8, price: 37.99,
+      desc: 'For a camera that has to reach a far corner. Each camera already comes with 60 ft.',
       url: NO + '100-ft-cat5e-ul-rated-ethernet-cable-with-rj45-coupler-1' }
   ];
 
-  var n = MIN, qty = { rec: 0, ptz: 0, ant: 0, cab: 0 };
+  var n = MIN, qty = { mp12: 0, refurb: 0, cab: 0 };
 
-  function money(v) { return '$' + Math.round(v).toLocaleString('en-US'); }
-  function cents(v) { return '$' + v.toFixed(2); }
+  function money(v) { return (v < 0 ? '−$' : '$') + Math.abs(Math.round(v)).toLocaleString('en-US'); }
+  function cents(v) { return (v < 0 ? '−$' : '$') + Math.abs(v).toFixed(2); }
   function packs(k, one, two) { return Math.floor(k / 2) * two + (k % 2) * one; }
   function $(id) { return document.getElementById(id); }
   function set(id, text) { $(id).textContent = text; }
+  function camCost(k, sharp) { return sharp ? packs(k, CAM12_ONE, CAM12_TWO) : packs(k, CAM_ONE, CAM_TWO); }
 
   // add-on rows
   var list = $('adds');
@@ -340,10 +335,8 @@
     var row = document.createElement('div');
     row.className = 'add';
     row.id = 'row-' + a.id;
-    var fit = a.fit ? ' <small>+ $' + a.fit + ' fitting</small>' : '';
     var ctl = a.max === 1
-      ? '<span class="add__why" id="why-' + a.id + '"></span>' +
-        '<button type="button" class="tog" data-id="' + a.id + '" aria-pressed="false">Add</button>'
+      ? '<button type="button" class="tog" data-id="' + a.id + '" aria-pressed="false">Add</button>'
       : '<div class="step" role="group" aria-label="' + a.name + ' quantity">' +
           '<button type="button" data-id="' + a.id + '" data-d="-1" aria-label="Remove one">&minus;</button>' +
           '<output id="q-' + a.id + '">0</output>' +
@@ -351,7 +344,7 @@
         '</div>';
     row.innerHTML =
       '<p class="add__t">' + a.name + '</p>' +
-      '<p class="add__p">' + cents(a.price) + (a.max > 1 ? ' <small>each</small>' : '') + fit + '</p>' +
+      '<p class="add__p" id="p-' + a.id + '"></p>' +
       '<p class="add__d">' + a.desc + ' <a href="' + a.url + '" target="_blank" rel="noopener">Night Owl &rarr;</a></p>' +
       '<div class="add__c">' + ctl + '</div>';
     list.appendChild(row);
@@ -364,72 +357,62 @@
     if (!b || b.disabled) return;
     var a = byId(b.dataset.id);
     if (a.max === 1) qty[a.id] = qty[a.id] ? 0 : 1;
-    else qty[a.id] = Math.max(0, Math.min(maxFor(a), qty[a.id] + Number(b.dataset.d)));
+    else qty[a.id] = Math.max(0, Math.min(a.max, qty[a.id] + Number(b.dataset.d)));
     draw();
   });
 
   $('minus').addEventListener('click', function () { n = Math.max(MIN, n - 1); draw(); });
   $('plus').addEventListener('click', function () { n = Math.min(MAX, n + 1); draw(); });
 
-  function bigRecorder() { return n > SMALL_MAX || qty.rec === 1; }
-  function wifiCams() { return bigRecorder() ? 0 : n - KIT_CAMS; }
-  function maxFor(a) { return a.id === 'ant' ? wifiCams() : a.max; }
-
   function draw() {
-    var big = bigRecorder(),
-        extra = n - KIT_CAMS,
-        wifi = wifiCams();
+    var extra = n - KIT_CAMS,
+        lab = n * RATE,
+        rec = qty.refurb ? REC_REFURB : REC,
+        cams = camCost(extra, qty.mp12),
+        sharpExtra = camCost(extra, 1) - camCost(extra, 0),
+        add = qty.cab * 37.99,
+        picked = qty.mp12 + qty.refurb + qty.cab;
 
-    // the antenna only makes sense with Wi-Fi cameras on the Best Buy recorder
-    qty.ant = Math.min(qty.ant, wifi);
-    $('row-ant').hidden = wifi === 0;
-
-    var fitted = n + qty.ptz,
-        lab = fitted * RATE,
-        hwExtra = big ? packs(extra, WIRED_ONE, WIRED_TWO) : packs(extra, WIFI_ONE, WIFI_TWO),
-        hwRec = big ? BIG_REC : 0,
-        add = 0, picked = 0;
+    // add-on prices that depend on the camera count
+    $('p-mp12').innerHTML = '+' + cents(sharpExtra) + ' <small>for ' + extra + '</small>';
+    $('p-refurb').innerHTML = cents(REC_REFURB - REC);
+    $('p-cab').innerHTML = cents(37.99) + ' <small>each</small>';
 
     ADDONS.forEach(function (a) {
-      if (a.id === 'rec') return;
-      add += qty[a.id] * a.price;
-      picked += qty[a.id];
-      var o = $('q-' + a.id);
-      o.textContent = qty[a.id];
-      o.previousElementSibling.disabled = qty[a.id] === 0;
-      o.nextElementSibling.disabled = qty[a.id] >= maxFor(a);
+      if (a.max === 1) {
+        var t = list.querySelector('.tog[data-id="' + a.id + '"]');
+        t.setAttribute('aria-pressed', qty[a.id] ? 'true' : 'false');
+        t.textContent = qty[a.id] ? 'Added' : 'Add';
+      } else {
+        var o = $('q-' + a.id);
+        o.textContent = qty[a.id];
+        o.previousElementSibling.disabled = qty[a.id] === 0;
+        o.nextElementSibling.disabled = qty[a.id] >= a.max;
+      }
     });
 
-    var forced = n > SMALL_MAX,
-        tog = list.querySelector('.tog[data-id="rec"]');
-    tog.setAttribute('aria-pressed', big ? 'true' : 'false');
-    tog.textContent = big ? 'Added' : 'Add';
-    tog.disabled = forced;
-    set('why-rec', forced ? 'Needed past 12 cameras' : '');
-    if (big) picked += 1;
-
-    var total = lab - DISCOUNTS + KIT + hwExtra + hwRec + add;
+    var total = lab - DISCOUNTS + KIT + rec + cams + add;
 
     $('minus').disabled = n === MIN;
     $('plus').disabled = n === MAX;
     set('n', n);
-    set('mix', '8 come in the Best Buy kit. The other ' + extra + ' get ordered from Night Owl' +
-      (big ? ', wired, to go on the 4TB recorder.' : ' as Wi-Fi cameras.'));
+    set('mix', '8 come in the Best Buy kit. The other ' + extra + ' get ordered from Night Owl, ' +
+      'with a second recorder to run them. All wired.');
 
-    set('l-lab', 'Fitting, ' + fitted + ' cameras × $' + RATE);
+    set('l-lab', 'Fitting, ' + n + ' cameras × $' + RATE);
     set('v-lab', money(lab));
     set('v-kit', money(KIT));
-    set('l-ext', extra + ' more ' + (big ? 'wired' : 'Wi-Fi') + ' cameras, ordered from Night Owl');
-    set('v-ext', money(hwExtra));
-    $('r-rec').hidden = !big;
-    set('v-rec', money(hwRec));
+    set('l-rec', (qty.refurb ? 'Refurbished second recorder' : 'Second recorder') + ', 4TB, ordered from Night Owl');
+    set('v-rec', money(rec));
+    set('l-ext', extra + ' more wired ' + (qty.mp12 ? '12MP' : '4K') + ' cameras, ordered from Night Owl');
+    set('v-ext', money(cams));
     $('r-add').hidden = !add;
     set('v-add', money(add));
     set('v-tot', money(total));
 
     set('c-tot', money(total));
-    set('c-lab-k', 'Other installers, labour for ' + fitted + ' cameras');
-    set('c-them', money(150 * fitted) + '–' + money(450 * fitted));
+    set('c-lab-k', 'Other installers, labour for ' + n + ' cameras');
+    set('c-them', money(150 * n) + '–' + money(450 * n));
     set('c-lab', money(lab - DISCOUNTS));
 
     set('bar-l', n + ' cameras' + (picked ? ' + ' + picked + ' add-on' + (picked === 1 ? '' : 's') : ''));
