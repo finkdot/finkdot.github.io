@@ -17,7 +17,6 @@
     --faint: #958c8b;
     --line: #ece6e5;
     --accent: #b94a48;
-    --accent-dark: #9e3d3b;
     --tint: #fbf1f0;
     --on-accent: #ffffff;
     --display: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
@@ -75,22 +74,18 @@
   .note { color: var(--soft); font-size: 13.5px; margin-top: 12px; }
 
   /* camera count */
-  .seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .seg button {
-    border: 1.5px solid var(--line);
-    border-radius: 12px;
-    padding: 12px 6px 10px;
-    text-align: center;
-    transition: border-color .15s, background-color .15s;
+  .cnt {
+    display: grid; grid-template-columns: 56px 1fr 56px; align-items: center;
+    border: 1.5px solid var(--accent); background: var(--tint); border-radius: 14px; padding: 8px;
   }
-  .seg b { display: block; font: 800 26px/1 var(--display); }
-  .seg span { display: block; font-size: 12px; color: var(--soft); margin-top: 4px; }
-  .seg button[aria-pressed="true"] { border-color: var(--accent); background: var(--tint); }
-  .seg button[aria-pressed="true"] b { color: var(--accent); }
+  .cnt button { height: 48px; border-radius: 10px; font-size: 26px; line-height: 1; color: var(--accent); background: var(--bg); }
+  .cnt button:disabled { color: var(--line); cursor: default; }
+  .cnt__v { text-align: center; }
+  .cnt__v b { display: block; font: 800 34px/1 var(--display); color: var(--accent); font-variant-numeric: tabular-nums; }
+  .cnt__v span { font-size: 12.5px; color: var(--soft); }
   .mix { font-size: 13.5px; color: var(--soft); margin-top: 10px; }
 
   /* add-ons */
-  .adds { display: grid; gap: 0; margin-top: 4px; }
   .add {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -100,12 +95,14 @@
     border-top: 1px solid var(--line);
   }
   .add:first-child { border-top: 0; }
+  .add[hidden] { display: none; }
   .add__t { font-weight: 600; font-size: 15px; }
   .add__p { font-weight: 700; color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
   .add__p small { font-weight: 500; color: var(--faint); font-size: 12px; }
   .add__d { grid-column: 1 / -1; font-size: 13px; color: var(--soft); }
   .add__d a { color: var(--faint); white-space: nowrap; }
-  .add__c { grid-column: 1 / -1; display: flex; justify-content: flex-end; }
+  .add__c { grid-column: 1 / -1; display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
+  .add__why { font-size: 12.5px; color: var(--accent); font-weight: 600; }
 
   .tog {
     border: 1.5px solid var(--accent);
@@ -117,6 +114,7 @@
     min-width: 92px;
   }
   .tog[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+  .tog:disabled { cursor: default; opacity: .75; }
 
   .step { display: inline-flex; align-items: center; border: 1.5px solid var(--line); border-radius: 999px; }
   .step button { width: 38px; height: 34px; font-size: 20px; line-height: 1; color: var(--accent); }
@@ -126,6 +124,7 @@
   /* summary */
   .sum { margin-top: 18px; background: var(--tint); border-radius: 14px; padding: 16px; }
   .line { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; padding: 4px 0; font-variant-numeric: tabular-nums; }
+  .line[hidden] { display: none; }
   .line span { color: var(--soft); }
   .line--off b { color: var(--accent); }
   .tot {
@@ -134,6 +133,7 @@
   }
   .tot span { font-weight: 600; }
   .tot b { font: 800 30px/1 var(--display); color: var(--accent); font-variant-numeric: tabular-nums; }
+  .saved { font-size: 13px; color: var(--accent); font-weight: 600; text-align: right; margin-top: 6px; }
 
   .bar {
     position: fixed;
@@ -193,32 +193,36 @@
   </header>
 
   <!-- builder -->
-  <section class="sec" aria-labelledby="b-h">
+  <section class="sec" id="builder" aria-labelledby="b-h">
     <h2 id="b-h">Build your price</h2>
 
     <p class="q">How many cameras?</p>
-    <div class="seg" id="count" role="group" aria-label="Number of cameras">
-      <button type="button" data-n="10" aria-pressed="true"><b>10</b><span>cameras</span></button>
-      <button type="button" data-n="11" aria-pressed="false"><b>11</b><span>cameras</span></button>
-      <button type="button" data-n="12" aria-pressed="false"><b>12</b><span>cameras</span></button>
+    <div class="cnt" role="group" aria-label="Number of cameras">
+      <button type="button" id="minus" aria-label="One fewer camera">&minus;</button>
+      <div class="cnt__v"><b id="n">10</b><span>cameras</span></div>
+      <button type="button" id="plus" aria-label="One more camera">+</button>
     </div>
     <p class="mix" id="mix"></p>
 
     <p class="q" style="margin-top:24px">Add anything?</p>
-    <div class="adds" id="adds"></div>
+    <div id="adds"></div>
 
     <div class="sum" aria-live="polite">
       <div class="line"><span id="l-lab">Fitting</span><b id="v-lab"></b></div>
       <div class="line line--off"><span>Your discount</span><b>&minus;$75</b></div>
+      <div class="line line--off"><span>Troubles discount</span><b>&minus;$100</b></div>
       <div class="line"><span>Main kit, Best Buy</span><b id="v-kit"></b></div>
-      <div class="line"><span id="l-wifi">Wi-Fi cameras, Night Owl</span><b id="v-wifi"></b></div>
-      <div class="line" id="r-add" hidden><span>Add-ons, Night Owl</span><b id="v-add"></b></div>
+      <div class="line" id="r-ext"><span id="l-ext"></span><b id="v-ext"></b></div>
+      <div class="line" id="r-rec" hidden><span>4TB recorder, ordered from Night Owl</span><b id="v-rec"></b></div>
+      <div class="line" id="r-add" hidden><span>Add-ons, ordered from Night Owl</span><b id="v-add"></b></div>
       <div class="tot"><span>Your price</span><b id="v-tot"></b></div>
+      <p class="saved">$175 off, already taken out</p>
     </div>
+    <p class="note">Best Buy&rsquo;s kit comes with 8 cameras. Everything past that gets ordered from
+    Night Owl&rsquo;s website and shipped, so we set the install day once it all arrives.</p>
     <p class="note">Labour is $75 a camera and won&rsquo;t change. Hardware is at today&rsquo;s store
     prices before sales tax, with no markup. You pay what the store charges and get every
     receipt.</p>
-
   </section>
 
   <section class="sec">
@@ -244,10 +248,10 @@
         </div>
       </div>
       <div>
-        <p class="cmp__k">Other installers, labour for 10&ndash;12 cameras</p>
+        <p class="cmp__k" id="c-lab-k">Other installers, labour</p>
         <div class="cmp__v">
-          <p class="cmp__them">$1,500&ndash;$5,400<small>$150&ndash;$450 a camera</small></p>
-          <p class="cmp__me">$675&ndash;$825</p>
+          <p class="cmp__them"><span id="c-them"></span><small>$150&ndash;$450 a camera</small></p>
+          <p class="cmp__me" id="c-lab"></p>
         </div>
       </div>
     </div>
@@ -258,10 +262,14 @@
   <section class="sec">
     <h2>Good to know</h2>
     <ul class="plain">
-      <li>The recorder takes 8 wired cameras and 4 Wi-Fi ones. Cameras 9 to 12 are Wi-Fi, so each
-      needs a power outlet nearby.</li>
+      <li>Best Buy only sells the kit with 8 cameras. The rest are ordered from Night Owl and
+      shipped.</li>
+      <li>The Best Buy recorder takes 8 wired cameras and 4 Wi-Fi ones. Cameras 9 to 12 on it are
+      Wi-Fi, so each needs a power outlet nearby.</li>
+      <li>The 4TB recorder takes up to 16 wired cameras, so every extra camera is wired. Before
+      ordering it, I check with Night Owl that the Best Buy kit&rsquo;s cameras work on it.</li>
       <li>Pan &amp; tilt cameras are for inside, and they run on their own with a memory card.</li>
-      <li>Footage stays on the recorder in the salon, not in the cloud.</li>
+      <li>Footage stays in the salon, not in the cloud.</li>
       <li>Brick, drywall repair, new outlets or very high ceilings would cost extra. I&rsquo;d tell
       you before starting, never after.</li>
     </ul>
@@ -271,15 +279,17 @@
     <h2>Next steps</h2>
     <ol class="steps">
       <li><span><b>Free walkthrough.</b> We pick where every camera goes.</span></li>
-      <li><span><b>Order the kit</b> at the best price we can find that week.</span></li>
-      <li><span><b>Install in one day.</b> It&rsquo;s live on your phone before I leave.</span></li>
+      <li><span><b>Get the hardware.</b> The 8-camera kit from Best Buy, and the extra cameras and
+      add-ons ordered from Night Owl.</span></li>
+      <li><span><b>Install in one day</b>, once the order arrives. It&rsquo;s live on your phone before
+      I leave.</span></li>
     </ol>
   </section>
 
   <p class="src">Main kit: Night Owl 12-Channel 8-Camera Wired IP 4K 2TB NVR (BNVR8-122-8L),
   <a href="https://www.bestbuy.com/site/6587853.p" target="_blank" rel="noopener">Best Buy</a>.
-  Wi-Fi cameras and add-ons:
-  <a href="https://nightowlsp.com/collections/accessories" target="_blank" rel="noopener">Night Owl</a>.
+  Extra cameras, recorder and add-ons:
+  <a href="https://nightowlsp.com/" target="_blank" rel="noopener">Night Owl</a>.
   ADT rates from
   <a href="https://myutilitysearch.com/?p=3424" target="_blank" rel="noopener">MyUtilitySearch</a>.
   Installer rates from
@@ -292,45 +302,48 @@
 <script>
 (function () {
   'use strict';
-  // Every price on the page lives here. Kit is Best Buy's; the rest is Night Owl's own store.
-  var RATE = 75, DISCOUNT = 75, WIRED = 8,
+  // Every price on the page lives here. The kit is Best Buy's; everything else is Night Owl's own store.
+  var RATE = 75, DISCOUNTS = 75 + 100,
+      MIN = 10, MAX = 16, KIT_CAMS = 8, SMALL_MAX = 12,
       KIT = 799.99,
-      WIFI_ONE = 109.99, WIFI_TWO = 214.99;
+      WIFI_ONE = 109.99, WIFI_TWO = 214.99,      // Wi-Fi 4K cameras, for the Best Buy recorder
+      WIRED_ONE = 109.99, WIRED_TWO = 159.99,    // wired 4K cameras, for the 4TB recorder
+      BIG_REC = 379.99;
 
   var NO = 'https://nightowlsp.com/products/';
   var ADDONS = [
+    { id: 'rec', name: '4TB recorder upgrade', price: BIG_REC, max: 1,
+      desc: 'Twice the recording history, and room for up to 16 wired cameras instead of 8.',
+      url: NO + '2-way-audio-24-channel-4k-nvr-with-4tb-hard-drive-add-up-to-24-total-devices' },
     { id: 'ptz', name: 'Pan & tilt camera', price: 94.98, fit: RATE, max: 4,
       desc: 'Turns to follow movement. Indoor, Wi-Fi, comes with a 128GB memory card ($59.99 camera + $34.99 card).',
       url: NO + 'indoor-wi-fi-ip-plug-in-3mp-deterrence-camera-with-pan-tilt-and-2-way-audio-white' },
-    { id: 'hdd', name: 'Second 2TB hard drive', price: 119.99, fit: 0, max: 1,
-      desc: 'Doubles how far back you can watch, to 4TB in total.',
-      url: NO + '3-5-internal-2tb-sata-hard-disk-drive-compatible-with-night-owl-wired-and-wireless-recorders' },
-    { id: 'ant', name: 'Wi-Fi antenna extender', price: 16.99, fit: 0, max: 4,
+    { id: 'ant', name: 'Wi-Fi antenna extender', price: 16.99, max: 4,
       desc: 'Stronger signal for a Wi-Fi camera that sits far from the recorder.',
       url: NO + '9-ft-wi-fi-extender-antenna-compatible-with-night-owl-wi-fi-ip-cameras-and-wi-fi-nvr' },
-    { id: 'cab', name: '100 ft Ethernet cable', price: 37.99, fit: 0, max: 8,
+    { id: 'cab', name: '100 ft Ethernet cable', price: 37.99, max: 8,
       desc: 'For a wired camera that has to reach a far corner.',
-      url: NO + '100-ft-cat5e-ul-rated-ethernet-cable-with-rj45-coupler-1' },
-    { id: 'sign', name: 'Yard sign + 4 window stickers', price: 19.99, fit: 0, max: 1,
-      desc: 'Lets people know the salon is on camera.',
-      url: NO + 'reflective-outdoor-aluminum-yard-stake-sign' }
+      url: NO + '100-ft-cat5e-ul-rated-ethernet-cable-with-rj45-coupler-1' }
   ];
 
-  var n = 10, qty = {};
-  ADDONS.forEach(function (a) { qty[a.id] = 0; });
+  var n = MIN, qty = { rec: 0, ptz: 0, ant: 0, cab: 0 };
 
   function money(v) { return '$' + Math.round(v).toLocaleString('en-US'); }
   function cents(v) { return '$' + v.toFixed(2); }
-  function wifiCost(w) { return Math.floor(w / 2) * WIFI_TWO + (w % 2) * WIFI_ONE; }
+  function packs(k, one, two) { return Math.floor(k / 2) * two + (k % 2) * one; }
+  function $(id) { return document.getElementById(id); }
+  function set(id, text) { $(id).textContent = text; }
 
-  // build add-on rows
-  var list = document.getElementById('adds');
+  // add-on rows
+  var list = $('adds');
   ADDONS.forEach(function (a) {
     var row = document.createElement('div');
     row.className = 'add';
+    row.id = 'row-' + a.id;
     var fit = a.fit ? ' <small>+ $' + a.fit + ' fitting</small>' : '';
     var ctl = a.max === 1
-      ? '<button type="button" class="tog" data-id="' + a.id + '" aria-pressed="false">Add</button>'
+      ? '<span class="add__why" id="why-' + a.id + '"></span>' +
+        '<button type="button" class="tog" data-id="' + a.id + '" aria-pressed="false">Add</button>'
       : '<div class="step" role="group" aria-label="' + a.name + ' quantity">' +
           '<button type="button" data-id="' + a.id + '" data-d="-1" aria-label="Remove one">&minus;</button>' +
           '<output id="q-' + a.id + '">0</output>' +
@@ -344,62 +357,81 @@
     list.appendChild(row);
   });
 
+  function byId(id) { return ADDONS.filter(function (x) { return x.id === id; })[0]; }
+
   list.addEventListener('click', function (e) {
     var b = e.target.closest('button[data-id]');
-    if (!b) return;
-    var a = ADDONS.filter(function (x) { return x.id === b.dataset.id; })[0];
+    if (!b || b.disabled) return;
+    var a = byId(b.dataset.id);
     if (a.max === 1) qty[a.id] = qty[a.id] ? 0 : 1;
-    else qty[a.id] = Math.max(0, Math.min(a.max, qty[a.id] + Number(b.dataset.d)));
+    else qty[a.id] = Math.max(0, Math.min(maxFor(a), qty[a.id] + Number(b.dataset.d)));
     draw();
   });
 
-  var count = document.getElementById('count');
-  count.addEventListener('click', function (e) {
-    var b = e.target.closest('button[data-n]');
-    if (!b) return;
-    n = Number(b.dataset.n);
-    Array.prototype.forEach.call(count.children, function (c) {
-      c.setAttribute('aria-pressed', c === b ? 'true' : 'false');
-    });
-    draw();
-  });
+  $('minus').addEventListener('click', function () { n = Math.max(MIN, n - 1); draw(); });
+  $('plus').addEventListener('click', function () { n = Math.min(MAX, n + 1); draw(); });
 
-  function set(id, text) { document.getElementById(id).textContent = text; }
+  function bigRecorder() { return n > SMALL_MAX || qty.rec === 1; }
+  function wifiCams() { return bigRecorder() ? 0 : n - KIT_CAMS; }
+  function maxFor(a) { return a.id === 'ant' ? wifiCams() : a.max; }
 
   function draw() {
-    var wifi = n - WIRED,
-        fitted = n + qty.ptz,
+    var big = bigRecorder(),
+        extra = n - KIT_CAMS,
+        wifi = wifiCams();
+
+    // the antenna only makes sense with Wi-Fi cameras on the Best Buy recorder
+    qty.ant = Math.min(qty.ant, wifi);
+    $('row-ant').hidden = wifi === 0;
+
+    var fitted = n + qty.ptz,
         lab = fitted * RATE,
-        hwWifi = wifiCost(wifi),
+        hwExtra = big ? packs(extra, WIRED_ONE, WIRED_TWO) : packs(extra, WIFI_ONE, WIFI_TWO),
+        hwRec = big ? BIG_REC : 0,
         add = 0, picked = 0;
 
     ADDONS.forEach(function (a) {
+      if (a.id === 'rec') return;
       add += qty[a.id] * a.price;
       picked += qty[a.id];
-      var o = document.getElementById('q-' + a.id);
-      if (o) {
-        o.textContent = qty[a.id];
-        o.previousElementSibling.disabled = qty[a.id] === 0;
-        o.nextElementSibling.disabled = qty[a.id] === a.max;
-      } else {
-        var t = list.querySelector('.tog[data-id="' + a.id + '"]');
-        t.setAttribute('aria-pressed', qty[a.id] ? 'true' : 'false');
-        t.textContent = qty[a.id] ? 'Added' : 'Add';
-      }
+      var o = $('q-' + a.id);
+      o.textContent = qty[a.id];
+      o.previousElementSibling.disabled = qty[a.id] === 0;
+      o.nextElementSibling.disabled = qty[a.id] >= maxFor(a);
     });
 
-    var total = lab - DISCOUNT + KIT + hwWifi + add;
+    var forced = n > SMALL_MAX,
+        tog = list.querySelector('.tog[data-id="rec"]');
+    tog.setAttribute('aria-pressed', big ? 'true' : 'false');
+    tog.textContent = big ? 'Added' : 'Add';
+    tog.disabled = forced;
+    set('why-rec', forced ? 'Needed past 12 cameras' : '');
+    if (big) picked += 1;
 
-    set('mix', '8 wired cameras from the kit + ' + wifi + ' Wi-Fi camera' + (wifi === 1 ? '' : 's') + '.');
+    var total = lab - DISCOUNTS + KIT + hwExtra + hwRec + add;
+
+    $('minus').disabled = n === MIN;
+    $('plus').disabled = n === MAX;
+    set('n', n);
+    set('mix', '8 come in the Best Buy kit. The other ' + extra + ' get ordered from Night Owl' +
+      (big ? ', wired, to go on the 4TB recorder.' : ' as Wi-Fi cameras.'));
+
     set('l-lab', 'Fitting, ' + fitted + ' cameras × $' + RATE);
     set('v-lab', money(lab));
     set('v-kit', money(KIT));
-    set('l-wifi', 'Wi-Fi cameras, Night Owl (' + wifi + ')');
-    set('v-wifi', money(hwWifi));
-    document.getElementById('r-add').hidden = !add;
+    set('l-ext', extra + ' more ' + (big ? 'wired' : 'Wi-Fi') + ' cameras, ordered from Night Owl');
+    set('v-ext', money(hwExtra));
+    $('r-rec').hidden = !big;
+    set('v-rec', money(hwRec));
+    $('r-add').hidden = !add;
     set('v-add', money(add));
     set('v-tot', money(total));
+
     set('c-tot', money(total));
+    set('c-lab-k', 'Other installers, labour for ' + fitted + ' cameras');
+    set('c-them', money(150 * fitted) + '–' + money(450 * fitted));
+    set('c-lab', money(lab - DISCOUNTS));
+
     set('bar-l', n + ' cameras' + (picked ? ' + ' + picked + ' add-on' + (picked === 1 ? '' : 's') : ''));
     set('bar-v', money(total));
   }
@@ -407,19 +439,11 @@
   draw();
 
   // the bottom bar shows the total while she is picking, and steps aside once the real total is on screen
-  var bar = document.getElementById('bar'),
-      builder = document.querySelector('[aria-labelledby="b-h"]'),
-      sum = document.querySelector('.sum'),
-      seen = { builder: false, sum: false };
+  var bar = $('bar'), seen = { b: false, s: false };
+  function bar_() { bar.classList.toggle('bar--on', seen.b && !seen.s); }
   if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (es) {
-      es.forEach(function (e) { seen[e.target === sum ? 'sum' : 'builder'] = e.isIntersecting; });
-      bar.classList.toggle('bar--on', seen.builder && !seen.sum);
-    }).observe(builder);
-    new IntersectionObserver(function (es) {
-      seen.sum = es[0].isIntersecting;
-      bar.classList.toggle('bar--on', seen.builder && !seen.sum);
-    }).observe(sum);
+    new IntersectionObserver(function (es) { seen.b = es[0].isIntersecting; bar_(); }).observe($('builder'));
+    new IntersectionObserver(function (es) { seen.s = es[0].isIntersecting; bar_(); }).observe(document.querySelector('.sum'));
   }
 })();
 </script>
