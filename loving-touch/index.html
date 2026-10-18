@@ -120,17 +120,21 @@
 
   /* summary */
   .sum { margin-top: 18px; background: var(--tint); border-radius: 14px; padding: 16px; }
-  .line { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; padding: 4px 0; font-variant-numeric: tabular-nums; }
+  .grp + .grp { margin-top: 16px; }
+  .grp__h { font: 700 11px/1.2 var(--body); text-transform: uppercase; letter-spacing: .1em; color: var(--accent); margin-bottom: 6px; }
+  .line { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 14px; padding: 5px 0; font-variant-numeric: tabular-nums; }
   .line[hidden] { display: none; }
-  .line span { color: var(--soft); }
-  .line--off b { color: var(--accent); }
+  .line span { color: var(--ink); }
+  .line small { display: block; font-size: 12px; color: var(--faint); }
+  .line--off span, .line--off b { color: var(--accent); }
+  .line--sub { border-top: 1px solid rgba(185, 74, 72, .18); margin-top: 4px; padding-top: 8px; }
+  .line--sub span { font-weight: 600; }
   .tot {
     display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
     margin-top: 10px; padding-top: 12px; border-top: 1px solid rgba(185, 74, 72, .18);
   }
   .tot span { font-weight: 600; }
   .tot b { font: 800 30px/1 var(--display); color: var(--accent); font-variant-numeric: tabular-nums; }
-  .saved { font-size: 13px; color: var(--accent); font-weight: 600; text-align: right; margin-top: 6px; }
 
   .bar {
     position: fixed;
@@ -205,21 +209,27 @@
     <div id="adds"></div>
 
     <div class="sum" aria-live="polite">
-      <div class="line"><span id="l-lab">Fitting</span><b id="v-lab"></b></div>
-      <div class="line line--off"><span>Your discount</span><b>&minus;$75</b></div>
-      <div class="line line--off"><span>Troubles discount</span><b>&minus;$100</b></div>
-      <div class="line"><span>8-camera kit, Best Buy</span><b id="v-kit"></b></div>
-      <div class="line"><span id="l-rec">Second recorder, 4TB, ordered from Night Owl</span><b id="v-rec"></b></div>
-      <div class="line"><span id="l-ext"></span><b id="v-ext"></b></div>
-      <div class="line" id="r-add" hidden><span>Add-ons, ordered from Night Owl</span><b id="v-add"></b></div>
+      <div class="grp">
+        <p class="grp__h">Labour</p>
+        <div class="line"><span id="l-lab">Installing cameras</span><b id="v-lab"></b></div>
+        <div class="line line--off"><span>Your discount</span><b>&minus;$75</b></div>
+        <div class="line line--off"><span>Troubles discount</span><b>&minus;$100</b></div>
+        <div class="line line--sub"><span>Labour total</span><b id="v-labt"></b></div>
+      </div>
+      <div class="grp">
+        <p class="grp__h">Hardware</p>
+        <div class="line"><span>8-camera kit<small>Best Buy</small></span><b id="v-kit"></b></div>
+        <div class="line"><span id="l-ext"></span><b id="v-ext"></b></div>
+        <div class="line"><span id="l-rec"></span><b id="v-rec"></b></div>
+        <div class="line" id="r-cab" hidden><span id="l-cab"></span><b id="v-cab"></b></div>
+        <div class="line line--sub"><span>Hardware total</span><b id="v-hwt"></b></div>
+      </div>
       <div class="tot"><span>Your price</span><b id="v-tot"></b></div>
-      <p class="saved">$175 off, already taken out</p>
     </div>
-    <p class="note">Best Buy&rsquo;s kit comes with 8 cameras. Everything past that gets ordered from
-    Night Owl&rsquo;s website and shipped, so we set the install day once it all arrives.</p>
-    <p class="note">Labour is $75 a camera and won&rsquo;t change. Hardware is at today&rsquo;s store
-    prices before sales tax, with no markup. You pay what the store charges and get every
-    receipt.</p>
+    <p class="note">Labour is $75 a camera and won&rsquo;t change. Hardware is what the store charges
+    today, before sales tax, with no markup, and you get every receipt. Best Buy only has the
+    8-camera kit, so the rest is ordered from Night Owl and shipped. We set the install day once
+    it arrives.</p>
   </section>
 
   <section class="sec">
@@ -396,18 +406,21 @@
     $('minus').disabled = n === MIN;
     $('plus').disabled = n === MAX;
     set('n', n);
-    set('mix', '8 come in the Best Buy kit. The other ' + extra + ' get ordered from Night Owl, ' +
-      'with a second recorder to run them. All wired.');
+    set('mix', '8 from the Best Buy kit + ' + extra + ' extra from Night Owl. All wired.');
 
-    set('l-lab', 'Fitting, ' + n + ' cameras × $' + RATE);
+    function label(id, main, sub) { $(id).innerHTML = main + '<small>' + sub + '</small>'; }
+    set('l-lab', 'Installing ' + n + ' cameras × $' + RATE);
     set('v-lab', money(lab));
+    set('v-labt', money(lab - DISCOUNTS));
     set('v-kit', money(KIT));
-    set('l-rec', (qty.refurb ? 'Refurbished second recorder' : 'Second recorder') + ', 4TB, ordered from Night Owl');
-    set('v-rec', money(rec));
-    set('l-ext', extra + ' more wired ' + (qty.mp12 ? '12MP' : '4K') + ' cameras, ordered from Night Owl');
+    label('l-ext', extra + ' extra ' + (qty.mp12 ? '12MP' : '4K') + ' cameras', 'Night Owl');
     set('v-ext', money(cams));
-    $('r-add').hidden = !add;
-    set('v-add', money(add));
+    label('l-rec', (qty.refurb ? 'Refurbished second' : 'Second') + ' recorder, 4TB', 'Night Owl, runs the extra cameras');
+    set('v-rec', money(rec));
+    $('r-cab').hidden = !qty.cab;
+    label('l-cab', qty.cab + ' × 100 ft cable', 'Night Owl');
+    set('v-cab', money(add));
+    set('v-hwt', money(KIT + rec + cams + add));
     set('v-tot', money(total));
 
     set('c-tot', money(total));
