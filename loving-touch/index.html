@@ -19,6 +19,7 @@
     --accent: #b94a48;
     --tint: #fbf1f0;
     --on-accent: #ffffff;
+    --done: #3e8a5c;
     --display: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
     --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
     color-scheme: light;
@@ -180,6 +181,11 @@
     font: 700 12px/24px var(--body); text-align: center;
   }
   .steps b { color: var(--ink); }
+  .steps li.done::before {
+    content: "";
+    background: var(--done) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-6.5' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 14px no-repeat;
+  }
+  .steps li.done b { color: var(--done); }
 
   .src { color: var(--faint); font-size: 12px; line-height: 1.55; padding-top: 22px; border-top: 1px solid var(--line); }
 
@@ -283,7 +289,7 @@
   <section class="sec">
     <h2>Next steps</h2>
     <ol class="steps">
-      <li><span><b>Free walkthrough.</b> We pick where every camera goes.</span></li>
+      <li class="done"><span><b>Walkthrough, done.</b> We&rsquo;ve already picked where every camera goes.</span></li>
       <li><span><b>Get the hardware.</b> The 8-camera kit from Best Buy, and the extra cameras and
       add-ons ordered from Night Owl.</span></li>
       <li><span><b>Install in one day</b>, once the order arrives. It&rsquo;s live on your phone before
