@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Loving Touch Camera Quote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+  /* White page, one narrow column, sections split by thin rules. One accent, used only for prices and ticks. */
+  :root {
+    --bg: #ffffff;
+    --ink: #16201e;
+    --soft: #5b6664;
+    --faint: #8b9593;
+    --line: #e6eae9;
+    --accent: #1f6f6b;
+    --on-accent: #ffffff;
+    --display: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+    --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 15px/1.55 var(--body);
+    -webkit-font-smoothing: antialiased;
+  }
+  b { font-weight: 600; }
+  a { color: inherit; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+
+  .prop {
+    max-width: 540px;
+    margin: 0 auto;
+    padding-block: 36px 44px;
+    padding-left: max(20px, env(safe-area-inset-left, 0px));
+    padding-right: max(20px, env(safe-area-inset-right, 0px));
+  }
+
+  .head { padding-bottom: 28px; }
+  h1 {
+    font: 800 clamp(30px, 8vw, 40px)/1.06 var(--display);
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+    text-wrap: balance;
+  }
+  .head p:last-child { color: var(--soft); font-size: 16px; }
+
+  .sec { padding-block: 26px; border-top: 1px solid var(--line); min-width: 0; }
+  .lbl {
+    font: 700 11.5px/1.2 var(--body);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--faint);
+    margin-bottom: 14px;
+  }
+  .note { color: var(--soft); font-size: 14px; margin-top: 16px; }
+
+  /* price */
+  .deal { font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 12px; }
+  .price { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .price__c { border: 1px solid var(--line); border-radius: 12px; padding: 14px 4px 12px; text-align: center; }
+  .price__n { font-size: 13px; color: var(--soft); }
+  .price__v {
+    font: 800 clamp(21px, 6.2vw, 28px)/1.1 var(--display);
+    color: var(--accent);
+    margin: 4px 0 8px;
+    font-variant-numeric: tabular-nums;
+  }
+  .price__b { font-size: 11.5px; line-height: 1.45; color: var(--faint); }
+
+  .rows { margin-top: 18px; }
+  .row { display: flex; justify-content: space-between; gap: 14px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; }
+  .row:first-child { border-top: 0; }
+  .row span { color: var(--soft); }
+  .row b { text-align: right; }
+
+  /* checklist */
+  .inc { list-style: none; display: grid; gap: 10px; }
+  .inc li { display: grid; grid-template-columns: 16px 1fr; gap: 10px; font-size: 15px; }
+  .inc svg { margin-top: 3px; width: 16px; height: 16px; }
+  .inc path { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* comparison */
+  .cmp { display: grid; gap: 18px; }
+  .cmp__k { font-size: 14px; color: var(--soft); margin-bottom: 6px; }
+  .cmp__v { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 12px; }
+  .cmp__them, .cmp__me { font: 700 17px/1.2 var(--display); font-variant-numeric: tabular-nums; }
+  .cmp__them { color: var(--faint); }
+  .cmp__me { color: var(--accent); text-align: right; margin-left: auto; font-weight: 800; }
+  .cmp__v small { display: block; font: 500 11.5px/1.3 var(--body); color: var(--faint); }
+
+  /* plain list */
+  .plain { list-style: none; display: grid; gap: 10px; }
+  .plain li { display: grid; grid-template-columns: 5px 1fr; gap: 12px; font-size: 14px; color: var(--soft); }
+  .plain li::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--faint); margin-top: 8px; }
+
+  /* steps */
+  .steps { list-style: none; counter-reset: s; display: grid; gap: 12px; }
+  .steps li { counter-increment: s; display: grid; grid-template-columns: 24px 1fr; gap: 12px; font-size: 14.5px; color: var(--soft); }
+  .steps li::before {
+    content: counter(s); width: 24px; height: 24px; border-radius: 50%;
+    background: var(--accent); color: var(--on-accent);
+    font: 700 12px/24px var(--body); text-align: center;
+  }
+  .steps b { color: var(--ink); }
+
+  .src { color: var(--faint); font-size: 11.5px; line-height: 1.5; padding-top: 22px; border-top: 1px solid var(--line); }
+
+  @media (max-width: 380px) {
+    .price { grid-template-columns: 1fr; }
+    .price__c { display: grid; grid-template-columns: auto 1fr; align-items: center; text-align: left; padding: 12px 14px; column-gap: 12px; }
+    .price__n { grid-column: 1; }
+    .price__v { grid-column: 2; grid-row: 1 / span 2; text-align: right; margin: 0; }
+    .price__b { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+<main class="prop">
+
+  <header class="head">
+    <p class="lbl">Camera Install</p>
+    <h1>Cameras for Loving&nbsp;Touch Pet&nbsp;Salon</h1>
+    <p>10&ndash;12 Night Owl 4K cameras, wired in and recording right in your salon. No contract.
+    No monthly fee.</p>
+  </header>
+
+  <section class="sec">
+    <h2 class="lbl">Your price</h2>
+    <p class="deal">$75 off labour, already taken off below</p>
+    <div class="price">
+      <div class="price__c">
+        <p class="price__n">10 cameras</p>
+        <p class="price__v">$1,525</p>
+        <p class="price__b">$675 labour<br>~$850 hardware</p>
+      </div>
+      <div class="price__c">
+        <p class="price__n">11 cameras</p>
+        <p class="price__v">$1,677</p>
+        <p class="price__b">$750 labour<br>~$927 hardware</p>
+      </div>
+      <div class="price__c">
+        <p class="price__n">12 cameras</p>
+        <p class="price__v">$1,829</p>
+        <p class="price__b">$825 labour<br>~$1,004 hardware</p>
+      </div>
+    </div>
+
+    <div class="rows">
+      <div class="row"><span>Labour</span><b>$75 per camera, then $75 off</b></div>
+      <div class="row"><span>Hardware</span><b>What Best Buy charges, no markup</b></div>
+      <div class="row"><span>Monthly fee</span><b>$0, ever</b></div>
+    </div>
+
+    <p class="note">The hardware part can move a few dollars with Best Buy&rsquo;s price, so the
+    totals are close, not exact. You pay the shelf price on the day and get the receipt. Want
+    more recording history? A 4TB drive instead of 2TB is +$70.</p>
+  </section>
+
+  <section class="sec">
+    <h2 class="lbl">What you get</h2>
+    <ul class="inc">
+      <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.5"/></svg>We walk the salon together and pick every spot</li>
+      <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.5"/></svg>Cables run neatly and out of sight</li>
+      <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.5"/></svg>Every camera mounted, aimed and tested</li>
+      <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.5"/></svg>Cameras named by room, so you know what you&rsquo;re looking at</li>
+      <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.5"/></svg>Live view on your phone from anywhere, plus any staff phones</li>
+      <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.5"/></svg>I show you how to find and save a clip</li>
+    </ul>
+  </section>
+
+  <section class="sec">
+    <h2 class="lbl">How it compares</h2>
+    <div class="cmp">
+      <div>
+        <p class="cmp__k">ADT monitored system, over 5 years</p>
+        <div class="cmp__v">
+          <p class="cmp__them">$3,478<small>$299 + $52.99/mo</small></p>
+          <p class="cmp__me">$1,525&ndash;$1,829<small>one time, then $0</small></p>
+        </div>
+      </div>
+      <div>
+        <p class="cmp__k">Other installers, labour for 10&ndash;12 cameras</p>
+        <div class="cmp__v">
+          <p class="cmp__them">$1,500&ndash;$5,400<small>$150&ndash;$450 a camera</small></p>
+          <p class="cmp__me">$675&ndash;$825<small>$75 a camera, then $75 off</small></p>
+        </div>
+      </div>
+    </div>
+    <p class="note">To be fair to ADT: their monthly fee pays for someone watching and calling the
+    police. This system records so you can see what happened, but nobody is watching it live.</p>
+  </section>
+
+  <section class="sec">
+    <h2 class="lbl">Good to know</h2>
+    <ul class="plain">
+      <li>Footage is saved on the recorder in the salon, not in the cloud.</li>
+      <li>The price assumes normal walls and a drop ceiling. Brick, drywall repair, new outlets or
+      very high ceilings would cost extra, and I&rsquo;d tell you before starting, never after.</li>
+      <li>The recorder takes up to 12 cameras, so 12 is the most this setup can hold.</li>
+    </ul>
+  </section>
+
+  <section class="sec">
+    <h2 class="lbl">Next steps</h2>
+    <ol class="steps">
+      <li><span><b>Free walkthrough.</b> We decide where the cameras go, and whether you want 10,
+      11 or 12.</span></li>
+      <li><span><b>Order the kit</b> from Best Buy at the best price we can find that week.</span></li>
+      <li><span><b>Install in one day.</b> It&rsquo;s live on your phone before I leave.</span></li>
+    </ol>
+  </section>
+
+  <p class="src">Prices: Night Owl 12-channel 4K kit with 8 cameras and 2TB drive,
+  <a href="https://www.bestbuy.com/site/6587853.p" target="_blank" rel="noopener">Best Buy</a>
+  $599.99, plus add-on cameras at about $65 each. ADT business rates from
+  <a href="https://myutilitysearch.com/?p=3424" target="_blank" rel="noopener">MyUtilitySearch</a>.
+  Installer rates from
+  <a href="https://www.eufy.com/blogs/security-camera/security-camera-installation-cost" target="_blank" rel="noopener">Eufy</a>.</p>
+
+</main>
+</body>
+</html>
