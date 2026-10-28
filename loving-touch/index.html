@@ -188,6 +188,17 @@
   .steps li.done b { color: var(--done); }
 
   .src { color: var(--faint); font-size: 12px; line-height: 1.55; padding-top: 22px; border-top: 1px solid var(--line); }
+  .nego {
+    margin-top: 24px;
+    border: 1.5px solid var(--accent);
+    background: var(--tint);
+    color: var(--accent);
+    border-radius: 12px;
+    padding: 14px 16px;
+    text-align: center;
+    font-size: 14.5px;
+  }
+  .nego b { font-weight: 800; text-transform: uppercase; letter-spacing: .08em; display: block; margin-bottom: 2px; }
 
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -234,7 +245,7 @@
       </div>
       <div class="tot"><span>Your price</span><b id="v-tot"></b></div>
     </div>
-    <p class="note">Labour is $80 a camera and won&rsquo;t change. Hardware is what the store charges
+    <p class="note">Labour is $85 a camera. Hardware is what the store charges
     today, before sales tax, with no markup, and you get every receipt. Best Buy only has the
     8-camera kit, so the rest is ordered from Night Owl and shipped. We set the install day once
     it arrives.</p>
@@ -306,6 +317,9 @@
   Installer rates from
   <a href="https://www.eufy.com/blogs/security-camera/security-camera-installation-cost" target="_blank" rel="noopener">Eufy</a>.</p>
 
+  <p class="nego"><b>Negotiable</b>If the price doesn&rsquo;t work for you, tell me and we&rsquo;ll work
+  something out.</p>
+
 </main>
 
 <button type="button" class="bar" id="bar" aria-label="See the price breakdown"><span class="bar__in"><span id="bar-l"></span><b id="bar-v"></b></span></button>
@@ -316,7 +330,7 @@
   // Every price on the page lives here. The kit is Best Buy's; everything else is Night Owl's own store.
   // Best Buy's recorder takes 8 wired cameras and the kit fills all 8, so any extra wired camera
   // runs on a second Night Owl recorder (24 channels, 4TB, up to 16 wired).
-  var RATE = 80, DISCOUNT = 75,
+  var RATE = 85, DISCOUNT = 75,
       MIN = 8, MAX = 16, KIT_CAMS = 8,
       KIT = 799.99,
       REC = 379.99, REC_REFURB = 299.99,
